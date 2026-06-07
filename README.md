@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://avatars3.githubusercontent.com/u/30764933?s=200&v=4" alt="chinese-poetry" height="100px">
+<img src="docs/logo.png" alt="chinese-poetry" height="100px">
 
 <h2>中国古诗词 API 服务</h2>
 
@@ -101,7 +101,7 @@ curl "http://localhost:1279/api/v1/dynasties"
 
 ### GraphQL API
 
-端点: `http://localhost:1279/graphql`
+端点：`http://localhost:1279/graphql`
 
 ```graphql
 # 繁体中文查询
@@ -160,7 +160,7 @@ query {
 
 ## 📖 数据集
 
-本项目基于 [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry) 数据集，包含:
+本项目基于 [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry) 数据集，包含：
 
 | 分类 | 数量 | 分类 | 数量 | 分类 | 数量 | 分类 | 数量 |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -181,5 +181,6 @@ pie title 收录数据分布概览 (忽略极小值)
 
 ## 🙏 致谢
 
-- 数据来源: [chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)
-- 简繁转换: [gocc](https://github.com/liuzl/gocc)
+- 数据来源：[chinese-poetry](https://github.com/chinese-poetry/chinese-poetry)
+- 简繁转换：[gocc](https://github.com/liuzl/gocc)
+
