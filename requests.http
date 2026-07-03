@@ -39,6 +39,18 @@ GET {{host}}/api/v1/poems/random?author=李白&dynasty=唐&type=五言绝句&typ
 ### Random poem filtered by IDs
 GET {{host}}/api/v1/poems/random?author_id={{authorId}}&dynasty_id={{dynastyId}}&type_id={{typeId}}
 
+### Random poem by character (飞花令), FTS-backed
+GET {{host}}/api/v1/poems/random?char=春
+
+### Random poem by character, combined with lang (only combination allowed)
+GET {{host}}/api/v1/poems/random?char=春&lang=zh-Hant
+
+### Random poem by character + author (expected 400 - not combinable)
+GET {{host}}/api/v1/poems/random?char=春&author=李白
+
+### Random poem by multi-character string (expected 400 - char must be a single character)
+GET {{host}}/api/v1/poems/random?char=春天
+
 
 # Search (FTS5-backed, see internal/database/migrate.go)
 

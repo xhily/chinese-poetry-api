@@ -245,6 +245,50 @@ func (r *Repository) GetRandomPoem(dynastyID, authorID *int64, typeIDs []int64) 
 	return r.GetPoemByID(strconv.FormatInt(poem.ID, 10))
 }
 
+// GetRandomPoemByChar returns a random poem whose content contains the given
+// character (for 飞花令-style games). Unlike GetRandomPoem, this is intentionally
+// not combinable with author/type/dynasty filters: the FTS join it uses to locate
+// candidates and the id/dynasty/author/type filters used elsewhere are separate
+// query shapes, and mixing them would make the "no filters other than char" API
+// contract (enforced by the handler) easy to silently violate.
+// Uses COUNT + random OFFSET for uniform distribution across matching poems.
+func (r *Repository) GetRandomPoemByChar(char string) (*Poem, error) {
+	poemTable := r.poemsTable()
+	ftsTable := r.poemsFtsTable()
+	pattern := "%" + char + "%"
+
+	matches := func(q *gorm.DB) *gorm.DB {
+		return q.Joins("JOIN "+ftsTable+" ON "+ftsTable+".rowid = "+poemTable+".id").
+			Where(ftsTable+".content_text LIKE ?", pattern)
+	}
+
+	// Count matching poems
+	var count int64
+	if err := matches(r.db.Table(poemTable)).Count(&count).Error; err != nil || count == 0 {
+		return nil, gorm.ErrRecordNotFound
+	}
+
+	// Generate a random offset in [0, count)
+	randomBig, err := rand.Int(rand.Reader, big.NewInt(count))
+	if err != nil {
+		return nil, err
+	}
+	offset := int(randomBig.Int64())
+
+	// Fetch the poem at the random offset
+	var poem Poem
+	err = matches(r.db.Table(poemTable)).
+		Select(poemTable + ".*").
+		Order(poemTable + ".id ASC").
+		Offset(offset).Limit(1).First(&poem).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// Load the full poem by ID with all relations
+	return r.GetPoemByID(strconv.FormatInt(poem.ID, 10))
+}
+
 // ListAuthorPoems returns a paginated list of poems by a specific author
 func (r *Repository) ListAuthorPoems(authorID int64, limit, offset int) ([]Poem, int, error) {
 	var totalCount int64
